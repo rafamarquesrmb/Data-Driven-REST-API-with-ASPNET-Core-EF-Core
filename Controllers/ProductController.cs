@@ -20,9 +20,7 @@ namespace Shop.Controllers
             {
                 var products = await context.Products.Include(x => x.Category).AsNoTracking().ToListAsync();
                 if(products == null || products.Count == 0 )
-                {
                     return NotFound(new { message = "products not found."});
-                }
                 return Ok(products);
             }
             catch (Exception ex)
@@ -39,9 +37,7 @@ namespace Shop.Controllers
             {
                 var product = await context.Products.Include(x => x.Category).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
                 if(product == null)
-                {
                     return NotFound(new { message = "product not found."});
-                }
                 return Ok(product);
             }
             catch (Exception ex)
@@ -55,11 +51,12 @@ namespace Shop.Controllers
         {
             try
             {
+                var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+                if(category == null)
+                    return NotFound(new { message = "Category not found..."});
                 var products = await context.Products.Include(x => x.Category).AsNoTracking().Where(x => x.CategoryId == id).ToListAsync();
                 if(products == null || products.Count == 0 )
-                {
                     return NotFound(new { message = "products not found."});
-                }
                 return Ok(products);
             }
             catch (Exception ex)
