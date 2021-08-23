@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Shop.Models;
 
 namespace Shop.Controllers
 {
@@ -11,24 +12,32 @@ namespace Shop.Controllers
         {
             return "Get";
         }
+        [HttpGet]
+        [Route("{id:int}")]
+        public string Get([FromRoute]int id)
+        {
+            return $"Get with ID: {id}";
+        }
 
         [HttpPost]
         [Route("")]
-        public string Post()
+        public Category Post([FromBody]Category model)
         {
-            return "Post";
+            return model;
         }
 
         [HttpPut]
-        [Route("")]
-        public string Put()
+        [Route("{id:int}")]
+        public Category Put([FromRoute]int id, [FromBody] Category model)
         {
-            return "Put";
+            if(model.Id == id)
+                return model;
+            return null;
         }
 
         [HttpDelete]
-        [Route("")]
-        public string Delete()
+        [Route("{id:int}")]
+        public string Delete([FromRoute]int id)
         {
             return "Delete";
         }
