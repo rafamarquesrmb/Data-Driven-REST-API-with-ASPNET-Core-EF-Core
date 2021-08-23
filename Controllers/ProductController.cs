@@ -114,7 +114,6 @@ namespace Shop.Controllers
             var product = await context.Products.FirstOrDefaultAsync(x => x.Id == id);
             if(product == null)
                 return NotFound(new { message = "product Not Found"});
-            
             try
             {
                 context.Products.Remove(product);
