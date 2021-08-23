@@ -8,9 +8,9 @@ namespace Shop.Models
     {
         [Key]
         public int Id { get; set; }
-        [Required(ErrorMessage = "Este Campo é obrigatório")]
-        [MaxLength(60,ErrorMessage = "Este campo deve conter entre 3 e 60 caracteres")]
-        [MinLength(3,ErrorMessage = "Este campo deve conter entre 3 e 60 caracteres")]
+        [Required(ErrorMessage = "Category Title is required")]
+        [MaxLength(60,ErrorMessage = "Category Title must contain between 3 and 60 characters.")]
+        [MinLength(3,ErrorMessage = "Category Title must contain between 3 and 60 characters.")]
         public string Title { get; set; }
     }
 }

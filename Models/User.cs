@@ -9,14 +9,14 @@ namespace Shop.Models
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Este campo é obrigatório")]
-        [MaxLength(20,ErrorMessage ="Este campo deve conter entre 3 e 20 caracteres")]
-        [MinLength(3,ErrorMessage ="Este campo deve conter entre 3 e 20 caracteres")]
+        [Required(ErrorMessage = "Username is required")]
+        [MaxLength(20,ErrorMessage = "The Username must contain between 3 and 20 characters.")]
+        [MinLength(3,ErrorMessage = "The Username must contain between 3 and 20 characters.")]
         public string Username { get; set; }
 
-        [Required(ErrorMessage = "Este campo é obrigatório")]
-        [MaxLength(20,ErrorMessage ="Este campo deve conter entre 3 e 20 caracteres")]
-        [MinLength(3,ErrorMessage ="Este campo deve conter entre 3 e 20 caracteres")]
+        [Required(ErrorMessage = "Password is required")]
+        [MaxLength(20,ErrorMessage = "The Password must contain between 3 and 20 characters.")]
+        [MinLength(3,ErrorMessage = "The Password must contain between 3 and 20 characters.")]
         public string Password { get; set; }
         public string Role { get; set; }
     }
