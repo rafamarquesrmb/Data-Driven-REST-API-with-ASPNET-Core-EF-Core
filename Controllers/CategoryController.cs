@@ -19,6 +19,10 @@ namespace Shop.Controllers
             try
             {
                 var categories = await context.Categories.AsNoTracking().ToListAsync();
+                if(categories == null || categories.Count == 0 )
+                {
+                    return NotFound(new { message = "Could not get categories."});
+                }
                 return Ok(categories);
             }
             catch (Exception ex)
@@ -34,6 +38,10 @@ namespace Shop.Controllers
             try
             {
                 var category = await context.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+                if(category == null)
+                {
+                    return NotFound(new { message = "Could not get category."});
+                }
                 return Ok(category);
             }
             catch (Exception ex)
