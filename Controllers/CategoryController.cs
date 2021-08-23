@@ -1,6 +1,10 @@
+using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Shop.Data;
 using Shop.Models;
 
 namespace Shop.Controllers
@@ -10,42 +14,98 @@ namespace Shop.Controllers
     {
         [HttpGet]
         [Route("")]
-        public async Task<ActionResult<List<Category>>> Get()
+        public async Task<ActionResult<List<Category>>> Get([FromServices]DataContext context)
         {
-            return new List<Category>();
+            try
+            {
+                var categories = await context.Categories.AsNoTracking().ToListAsync();
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Could not get categories. Error: {ex.Message}"});
+            }
+            
         }
         [HttpGet]
         [Route("{id:int}")]
-        public async Task<ActionResult<Category>> GetById([FromRoute]int id)
+        public async Task<ActionResult<Category>> GetById([FromRoute]int id,[FromServices]DataContext context)
         {
-            return new Category();
+            try
+            {
+                var category = await context.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+                return Ok(category);
+            }
+            catch (Exception ex)
+            {
+                
+                return BadRequest(new { message = $"Could not get this category. Error: {ex.Message}"});
+            }
+            
         }
 
         [HttpPost]
         [Route("")]
-        public async Task<ActionResult<Category>> Post([FromBody]Category model)
+        public async Task<ActionResult<Category>> Post([FromBody]Category model, [FromServices]DataContext context)
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
-            return Ok(model);
+            
+            try
+            {
+                context.Categories.Add(model);
+                await context.SaveChangesAsync();
+                return Ok(model);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Could not create category. Error: {ex.Message}"});
+            }
         }
 
         [HttpPut]
         [Route("{id:int}")]
-        public async Task<ActionResult<Category>> Put([FromRoute]int id, [FromBody] Category model)
+        public async Task<ActionResult<Category>> Put([FromRoute]int id, [FromBody] Category model, [FromServices]DataContext context)
         {
             if(id != model.Id)
                 return NotFound(new {message = "Category not found"});
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
-            return NotFound();
+            try
+            {
+                context.Entry<Category>(model).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+                return Ok(model);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return BadRequest(new { message = $"Could not Update this category (Concurrency exception). Error: {ex.Message}"});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Could not Update this category. Error: {ex.Message}"});
+            }
         }
 
         [HttpDelete]
         [Route("{id:int}")]
-        public async Task<ActionResult<Category>> Delete([FromRoute]int id)
+        public async Task<ActionResult<Category>> Delete([FromRoute]int id, [FromServices]DataContext context)
         {
-            return Ok();
+            var category = await context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            if(category == null)
+                return NotFound(new { message = "Category Not Found"});
+            
+            try
+            {
+                context.Categories.Remove(category);
+                await context.SaveChangesAsync();
+                return Ok(new { message = "Category Removed"});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Could not Delete this category. Error: {ex.Message}"});
+            }
+            
         }
     }
 }
