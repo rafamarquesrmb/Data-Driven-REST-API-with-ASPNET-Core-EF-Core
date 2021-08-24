@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shop.Data;
 using Shop.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Shop.Controllers
 {
@@ -14,6 +15,7 @@ namespace Shop.Controllers
     {
         [HttpGet]
         [Route("")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<Product>>> Get([FromServices] DataContext context)
         {
             try
@@ -31,6 +33,7 @@ namespace Shop.Controllers
 
         [HttpGet]
         [Route("{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Product>> GetById([FromRoute] int id, [FromServices] DataContext context)
         {
             try
@@ -47,6 +50,7 @@ namespace Shop.Controllers
         }
         [HttpGet]
         [Route("categories/{id:int}")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<Product>>> GetByCategory([FromRoute] int id,[FromServices] DataContext context)
         {
             try
@@ -66,6 +70,7 @@ namespace Shop.Controllers
         }
         [HttpPost]
         [Route("")]
+        [Authorize(Roles = "manager,employee")]
         public async Task<ActionResult<Product>> Post([FromBody]Product model, [FromServices]DataContext context)
         {
             if(!ModelState.IsValid)
@@ -85,6 +90,7 @@ namespace Shop.Controllers
 
         [HttpPut]
         [Route("{id:int}")]
+        [Authorize(Roles = "manager,employee")]
         public async Task<ActionResult<Product>> Put([FromRoute]int id, [FromBody] Product model, [FromServices]DataContext context)
         {
             if(id != model.Id)
@@ -109,13 +115,15 @@ namespace Shop.Controllers
 
         [HttpDelete]
         [Route("{id:int}")]
+        [Authorize(Roles = "manager")]
         public async Task<ActionResult<Product>> Delete([FromRoute]int id, [FromServices]DataContext context)
         {
-            var product = await context.Products.FirstOrDefaultAsync(x => x.Id == id);
-            if(product == null)
-                return NotFound(new { message = "product Not Found"});
+            
             try
             {
+                var product = await context.Products.FirstOrDefaultAsync(x => x.Id == id);
+                if(product == null)
+                    return NotFound(new { message = "product Not Found"});
                 context.Products.Remove(product);
                 await context.SaveChangesAsync();
                 return Ok(new { message = "product Removed"});
