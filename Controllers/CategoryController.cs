@@ -9,12 +9,13 @@ using Shop.Models;
 
 namespace Shop.Controllers
 {
-    [Route("categories")]
+    [Route("v1/categories")]
     public class CategoryController : ControllerBase
     {
         [HttpGet]
         [Route("")]
         [AllowAnonymous]
+        [ResponseCache(VaryByHeader = "User-Agent", Location = ResponseCacheLocation.Any,Duration = 30)]
         public async Task<ActionResult<List<Category>>> Get([FromServices]DataContext context)
         {
             try
@@ -33,6 +34,7 @@ namespace Shop.Controllers
         [HttpGet]
         [Route("{id:int}")]
         [AllowAnonymous]
+        [ResponseCache(VaryByHeader = "User-Agent", Location = ResponseCacheLocation.Any,Duration = 30)]
         public async Task<ActionResult<Category>> GetById([FromRoute]int id,[FromServices]DataContext context)
         {
             try

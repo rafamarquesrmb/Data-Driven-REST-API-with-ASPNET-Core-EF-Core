@@ -11,7 +11,7 @@ using Shop.Services;
 
 namespace Shop.Controllers
 {
-    [Route("user")]
+    [Route("v1/user")]
     public class UserController : ControllerBase
     {
         
@@ -45,6 +45,7 @@ namespace Shop.Controllers
         [HttpGet]
         [Route("")]
         [Authorize(Roles = "manager")]
+        [ResponseCache(Location = ResponseCacheLocation.None , Duration = 0, NoStore = true)]
         public async Task<ActionResult<List<User>>> Get([FromServices]DataContext context)
         {
             try
@@ -62,6 +63,7 @@ namespace Shop.Controllers
         [HttpGet]
         [Route("{id:int}")]
         [Authorize(Roles = "manager")]
+        [ResponseCache(Location = ResponseCacheLocation.None , Duration = 0, NoStore = true)]
         public async Task<ActionResult<User>> GetById([FromRoute] int id, [FromServices] DataContext context)
         {
             try
@@ -79,6 +81,7 @@ namespace Shop.Controllers
         [HttpGet]
         [Route("{username}")]
         [Authorize(Roles = "manager")]
+        [ResponseCache(Location = ResponseCacheLocation.None , Duration = 0, NoStore = true)]
         public async Task<ActionResult<User>> GetByUsername([FromRoute] string username, [FromServices] DataContext context)
         {
             try
@@ -96,6 +99,7 @@ namespace Shop.Controllers
         [HttpPost]
         [Route("")]
         [Authorize(Roles = "manager,employee")]
+        [ResponseCache(Location = ResponseCacheLocation.None , Duration = 0, NoStore = true)]
         public async Task<ActionResult<User>> Post([FromBody]User model, [FromServices]DataContext context)
         {
             if(!ModelState.IsValid)
@@ -121,6 +125,7 @@ namespace Shop.Controllers
         [HttpPut]
         [Route("{id:int}")]
         [Authorize(Roles = "manager")]
+        [ResponseCache(Location = ResponseCacheLocation.None , Duration = 0, NoStore = true)]
         public async Task<ActionResult<User>> Put([FromRoute] int id,[FromBody]User model, [FromServices]DataContext context)
         {
             if(id != model.Id)
@@ -148,6 +153,7 @@ namespace Shop.Controllers
         [HttpDelete]
         [Route("{id:int}")]
         [Authorize(Roles = "manager")]
+        [ResponseCache(Location = ResponseCacheLocation.None , Duration = 0, NoStore = true)]
         public async Task<ActionResult<User>> Delete([FromRoute] int id, [FromServices]DataContext context)
         {
             try

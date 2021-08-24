@@ -10,12 +10,13 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Shop.Controllers
 {
-    [Route("products")]
+    [Route("v1/products")]
     public class ProductController : ControllerBase
     {
         [HttpGet]
         [Route("")]
         [AllowAnonymous]
+        [ResponseCache(VaryByHeader = "User-Agent", Location = ResponseCacheLocation.Any,Duration = 30)]
         public async Task<ActionResult<List<Product>>> Get([FromServices] DataContext context)
         {
             try
@@ -34,6 +35,7 @@ namespace Shop.Controllers
         [HttpGet]
         [Route("{id:int}")]
         [AllowAnonymous]
+        [ResponseCache(VaryByHeader = "User-Agent", Location = ResponseCacheLocation.Any,Duration = 30)]
         public async Task<ActionResult<Product>> GetById([FromRoute] int id, [FromServices] DataContext context)
         {
             try
@@ -51,6 +53,7 @@ namespace Shop.Controllers
         [HttpGet]
         [Route("categories/{id:int}")]
         [AllowAnonymous]
+        [ResponseCache(VaryByHeader = "User-Agent", Location = ResponseCacheLocation.Any,Duration = 30)]
         public async Task<ActionResult<List<Product>>> GetByCategory([FromRoute] int id,[FromServices] DataContext context)
         {
             try
