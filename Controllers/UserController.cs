@@ -29,6 +29,7 @@ namespace Shop.Controllers
                 if (user == null)
                     return NotFound(new { message = "Invalid User or Password..."});
                 var token = TokenService.GenerateToken(user);
+                user.Password = "";
                 return new {
                     user = user,
                     token = token
@@ -53,6 +54,8 @@ namespace Shop.Controllers
                 var users = await context.Users.AsNoTracking().ToListAsync();
                 if(users == null || users.Count == 0 )
                     return NotFound(new { message = "users not found."});
+                foreach(var user in users)
+                    user.Password = "";
                 return Ok(users);
             }
             catch (Exception ex)
@@ -71,6 +74,7 @@ namespace Shop.Controllers
                 var user = await context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
                 if(user == null)
                     return NotFound(new { message = "user not found."});
+                user.Password = "";
                 return Ok(user);
             }
             catch (Exception ex)
@@ -89,6 +93,7 @@ namespace Shop.Controllers
                 var user = await context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Username == username);
                 if(user == null)
                     return NotFound(new { message = "user not found."});
+                user.Password = "";
                 return Ok(user);
             }
             catch (Exception ex)
@@ -98,9 +103,36 @@ namespace Shop.Controllers
         }
         [HttpPost]
         [Route("")]
-        [Authorize(Roles = "manager,employee")]
+        [Authorize(Roles = "employee")]
         [ResponseCache(Location = ResponseCacheLocation.None , Duration = 0, NoStore = true)]
         public async Task<ActionResult<User>> Post([FromBody]User model, [FromServices]DataContext context)
+        {
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+            if(model.Role == null)
+                model.Role = "visitor";
+            if(model.Role == "manager")
+                return BadRequest(new { message = $"You are not authorized to create Users as managers"});
+            
+            try
+            {
+                var user = await context.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Username == model.Username);
+                if(user != null)
+                    return BadRequest(new { message = $"Could not create User with that username"});
+                context.Users.Add(model);
+                await context.SaveChangesAsync();
+                return Ok(new { message = $"User {model.Username} created"});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Could not create User. Error: {ex.Message}"});
+            }
+        }
+        [HttpPost]
+        [Route("manager")]
+        [Authorize(Roles = "manager")]
+        [ResponseCache(Location = ResponseCacheLocation.None , Duration = 0, NoStore = true)]
+        public async Task<ActionResult<User>> PostAsManager([FromBody]User model, [FromServices]DataContext context)
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -139,6 +171,7 @@ namespace Shop.Controllers
                     return NotFound(new { message = "user not found"});
                 context.Entry<User>(model).State = EntityState.Modified;
                 await context.SaveChangesAsync();
+                model.Password = "";
                 return Ok(model);
             }
             catch (DbUpdateConcurrencyException ex)
